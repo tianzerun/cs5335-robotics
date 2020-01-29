@@ -11,36 +11,24 @@
 %                 (orientation is to be ignored)
 
 function traj = Q4(f, qInit, circle, velocity)
-    epsilon = 0.05;
-    [~, numCols] = size(circle);
-    traj = zeros(200, 9);
-    traj(1,:) = qInit;
-    lastRow = 1;
+    % tuning parameters
+    epsilon = 0.01;
     
-    for i = 1:(numCols - 1)
-        partialTraj = Q3(f, traj(lastRow,:), circle(:,i+1), epsilon, velocity);
+    % initialize a matrix to store trajectory information
+    numRows = 300;
+    traj = zeros(numRows, 9);
+    traj(1,:) = qInit;
+    
+    % calculate the trajectory for each critial point on the circle
+    lastRow = 1;
+    for target = circle
+        partialTraj = Q3(f, traj(lastRow,:), target, epsilon, velocity);
         [steps, ~] = size(partialTraj);
         prevLastRow = lastRow;
         lastRow = lastRow + steps - 1;
         traj(prevLastRow:lastRow,:) = partialTraj;
     end
-    traj(lastRow + 1:200,:) = [];
-    disp(traj);
-    disp(size(traj));
+    
+    % remove rows of zeros at the end
+    traj(lastRow + 1:numRows,:) = [];
 end
-
-
-
-% function traj = Q4(f, qInit, circle, velocity)
-%     epsilon = 0.05;
-%     [~, numCols] = size(circle);
-%     traj = qInit;
-%     for i = 1:(numCols - 1)
-%         [numRows, ~] = size(traj);
-%         partialTraj = Q3(f, traj(numRows,:), circle(:,i+1), epsilon, velocity);
-%         partialTraj(1,:) = [];
-%         traj = [traj; partialTraj];
-%     end
-%     disp(traj);
-%     disp(size(traj));
-% end

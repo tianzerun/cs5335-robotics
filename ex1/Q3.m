@@ -10,23 +10,28 @@
 %                 trajectory.
 
 function traj = Q3(f, qInit, posGoal, epsilon, velocity)
+    % calculate the dx to be moved at each time step
     v = posGoal - f.fkine(qInit).t;
     nv = v / norm(v);
     dx = velocity * nv;
-    q = qInit;
-    numOfRows = round(norm(v) / velocity);
-    traj = zeros(numOfRows, 9);
+    
+    % initialize the matrix to store trajectory (configurations)
+    numRows = round(norm(v) / velocity);
+    traj = zeros(numRows, 9);
     traj(1,:) = qInit;
     
+    % calculate trajectory configurations 
+    q = qInit;
     rowP = 2;
     while true
         if norm(posGoal - f.fkine(q).t) < epsilon; break; end
         invJ = pinv(f.jacob0(q));
-
         dq = invJ * [dx;0;0;0];
         q = q + dq';
         traj(rowP,:) = q;
         rowP = rowP + 1;
     end
-    traj(rowP:numOfRows,:) = [];
+    
+    % remove rows of zeros at the end
+    traj(rowP:numRows,:) = [];
 end

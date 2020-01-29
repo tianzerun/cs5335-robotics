@@ -8,8 +8,8 @@ function q = Q2(f, qInit, posGoal)
     stepSize = 0.5;
     q = qInit;
     dx = Inf;
-    epsilon = 1.0e-06;
-    while abs(dx) > epsilon
+    epsilon = 0.001;
+    while norm(dx) > epsilon
         x = f.fkine(q).t;
         dx = posGoal - x;
         invJ = pinv(f.jacob0(q));
@@ -17,22 +17,3 @@ function q = Q2(f, qInit, posGoal)
         q  = q + dq';
     end
 end
-
-
-
-% function q = Q2(f, qInit, posGoal)
-%     stepSize = 0.5;
-%     q = qInit;
-%     dx = Inf;
-%     epsilon = 1.0e-06;
-%     while abs(dx) > epsilon
-%         x = f.fkine(q);
-%         disp(x);
-%         disp(x.t);
-%         dx = tr2delta(x, SE3(posGoal));
-%         invJ = pinv(f.jacob0(q));
-% 
-%         dq = stepSize * invJ * dx;
-%         q  = q + dq';
-%     end
-% end
