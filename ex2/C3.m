@@ -12,5 +12,34 @@
 %                      >  2 otherwise
 
 function distances = C3(cspace, q_grid, q_goal)
-
+    distances = cspace;
+    tolerance = abs((q_grid(1) - q_grid(2))) / 2;
+    neighbors = [[-1 0 1 -1 1 -1 0 1]; [1 1 1 0 0 -1 -1 -1]];
+    [max_row, max_col] = size(cspace);
+    
+    goal_x = find(abs(q_grid-q_goal(1)) < tolerance);
+    goal_y = find(abs(q_grid-q_goal(2)) < tolerance);
+    distances(goal_x, goal_y) = 2;
+   
+    froniter = [goal_x, goal_y];
+    [froniter_size, ~] = size(froniter);
+    while froniter_size > 0
+        cur = froniter(1,:);
+        cur_x = cur(1);
+        cur_y = cur(2);
+        froniter(1,:) = [];
+        
+        for n = neighbors
+            n_x = cur_x + n(1);
+            n_y = cur_y + n(2);
+            if ((n_x >= 1) && (n_x <= max_col)...
+                && (n_y >= 1) && (n_y <= max_row)...
+                && distances(n_x, n_y) == 0)
+                froniter = [froniter; [n_x, n_y]];
+                distances(n_x, n_y) = distances(cur_x, cur_y) + 1;
+            end
+        end
+        % update 
+        [froniter_size, ~] = size(froniter); 
+    end
 end

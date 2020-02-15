@@ -13,7 +13,6 @@ function cspace = C2(robot, obstacles, q_grid)
     [~, num_grid_points] = size(q_grid);
     cspace = zeros(num_grid_points);
     
-    
     for row = 1:num_grid_points
         for col = 1:num_grid_points
             [poly1, poly2, ~, ~] = q2poly(robot, [q_grid(row) ; q_grid(col)]);
@@ -24,7 +23,7 @@ function cspace = C2(robot, obstacles, q_grid)
                 % when any link intersect, there is a collision
                 if poly1_obs.NumRegions > 0 || poly2_obs.NumRegions > 0
                     cspace(row, col) = 1;
-                    break
+                    break;
                 end
             end
             
