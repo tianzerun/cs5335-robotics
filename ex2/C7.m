@@ -8,5 +8,36 @@
 %                          == 0 otherwise
 
 function padded_cspace = C7(cspace)
-
+    [num_row, num_col] = size(cspace);
+    valid_row_range = [1 num_row];
+    valid_col_range = [1 num_col];
+    neighbors = [[-1 0 1 -1 1 -1 0 1]; [1 1 1 0 0 -1 -1 -1]];
+    padded_cspace = cspace;
+    
+    for row = 1:num_row
+        for col = 1:num_col
+            cell = cspace(row, col);
+            
+            if cell == 1
+                for n = neighbors
+                    n_x = row + n(1);
+                    n_y = col + n(2);
+                    if in_range(n_x, valid_row_range)...
+                       && in_range(n_y, valid_col_range)...
+                       && cspace(n_x, n_y) == 0
+                        padded_cspace(n_x, n_y) = 1;
+                        break;
+                    end
+                end
+            end
+            
+        end
+    end
 end
+
+function eval = in_range(value, range)
+    left = range(1);
+    right = range(2);
+    eval = value >= left && value <= right;
+end
+
