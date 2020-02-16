@@ -39,6 +39,6 @@ end
 
 function swept_volume = calculate_swept_vol(from, to)
     points = [from.Vertices; to.Vertices];
-    [k, ~] = convhull([from.Vertices; to.Vertices]);
+    k = convhull([from.Vertices; to.Vertices]);
     swept_volume = polyshape(points(k, 1), points(k, 2));
 end
