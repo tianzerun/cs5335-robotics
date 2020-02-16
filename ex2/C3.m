@@ -27,6 +27,7 @@ function distances = C3(cspace, q_grid, q_goal)
         cur = froniter(1,:);
         cur_x = cur(1);
         cur_y = cur(2);
+        cur_val = distances(cur_x, cur_y);
         froniter(1,:) = [];
         
         for n = neighbors
@@ -36,7 +37,7 @@ function distances = C3(cspace, q_grid, q_goal)
                 && (n_y >= 1) && (n_y <= max_row)...
                 && distances(n_x, n_y) == 0)
                 froniter = [froniter; [n_x, n_y]];
-                distances(n_x, n_y) = distances(cur_x, cur_y) + 1;
+                distances(n_x, n_y) = cur_val + 1;
             end
         end
         % update 
