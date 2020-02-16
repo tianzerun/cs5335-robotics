@@ -22,5 +22,4 @@ function q_path = C5(q_grid, q_start, q_goal, path)
         step = path(i,:);
         q_path(i,:) = [q_grid(step(1)) q_grid(step(2))];
     end
-    
 end
