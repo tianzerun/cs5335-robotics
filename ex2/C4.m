@@ -31,7 +31,7 @@ function path = C4(distances, q_grid, q_start)
         next_y = explore_y;
         
         min_dist = distances(next_x, next_y);
-        min_manhattan_dist = abs(next_x - goal_x) + abs(next_y - goal_y);
+        min_diag_dist = diagonal_dist(next_x, next_y, goal_x, goal_y);
         
         for n = neighbors
             n_x = n(1) + explore_x;
@@ -44,7 +44,7 @@ function path = C4(distances, q_grid, q_start)
             
             % Use manhattan distance to break tie when points have
             % the same distance to the goal.
-            cur_manhattan_dist = abs(n_x - goal_x) + abs(n_y - goal_y);
+            cur_diag_dist = diagonal_dist(n_x, n_y, goal_x, goal_y);
             
             % Update the next cell to be explore to this cell if its 
             % distance to the goal cell is closer.
@@ -52,9 +52,9 @@ function path = C4(distances, q_grid, q_start)
                 min_dist = n_dist;
                 next_x = n_x;
                 next_y = n_y;
-            elseif n_dist == min_dist && cur_manhattan_dist < min_manhattan_dist
+            elseif n_dist == min_dist && cur_diag_dist < min_diag_dist
                 min_dist = n_dist;
-                min_manhattan_dist = cur_manhattan_dist;
+                min_diag_dist = cur_diag_dist;
                 next_x = n_x;
                 next_y = n_y;
             end
@@ -63,4 +63,13 @@ function path = C4(distances, q_grid, q_start)
         explore_y = next_y;
         path = [path; [explore_x explore_y]];
     end
+end
+
+
+function distance = diagonal_dist(from_x, from_y, to_x, to_y)
+    D = 1; % cost of moving to one of the adjacent cells
+    D2 = 0.5; % cost of moving diagonally
+    dx = abs(from_x - to_x);
+    dy = abs(from_y - to_y);
+    distance =  D * (dx + dy) + (D2 - 2 * D) * min(dx, dy);
 end
