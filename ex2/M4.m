@@ -16,19 +16,19 @@
 
 function [path, path_found] = M4(robot, q_min, q_max, q_start, q_goal, link_radius, sphere_centers, sphere_radii)
     % Build tree from q_start to q_goal.
-    n = 150;
+    n = 500; % maximum sample size
     alpha = 0.2;
     beta = 0.1;
     threshold = 0.3;
     V = q_start;
     E = [];
-    
+
     goal_found = false;
     for i = 1:n
         if goal_found
             break
         end
-        
+
         if rand() < beta
             q_target = q_goal;
         else
@@ -37,17 +37,17 @@ function [path, path_found] = M4(robot, q_min, q_max, q_start, q_goal, link_radi
         q_near = closet_neighbor(q_target, V);
         q_diff = (q_target - q_near);
         q_new = q_near + alpha * q_diff / norm(q_diff);
-        
+
         if ~check_collision(robot, q_new, link_radius, sphere_centers, sphere_radii)...
            && ~check_edge(robot, q_near, q_new, link_radius, sphere_centers, sphere_radii)
             % Update V and E with the new node.
             V = [V; q_new];
             E = [E; q_near; q_new];
-            
+
             % When the new node is close enough to the goal node,
             % check if it can reach the goal node without collision.
             if norm(q_goal - q_new) < threshold
-                % The program halts when the new node connects to the goal 
+                % The program halts when the new node connects to the goal.
                 % node without collision.
                 if ~check_edge(robot, q_new, q_goal, link_radius, sphere_centers, sphere_radii)
                     goal_found = true;
@@ -55,11 +55,11 @@ function [path, path_found] = M4(robot, q_min, q_max, q_start, q_goal, link_radi
                     E = [E; q_new; q_goal];
                 end
             end
-            
+ 
         end
     end
-      
-    
+
+
     % Traverse the tree to recover the actual path
     path = [];
     path_found = goal_found;

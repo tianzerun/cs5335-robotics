@@ -12,5 +12,35 @@
 %                          waypoints may have been removed
 
 function smoothed_path = M5(robot, path, link_radius, sphere_centers, sphere_radii)
+    q_goal = path(end,:);
+    num_tries = 2;
+    
+    attempt = 0;
+    while attempt < num_tries
+        smoothed_path = path(1,:);
+        skip_next = false;
+        for i = 1:size(path, 1) - 2
+            if skip_next
+                skip_next = false;
+                continue
+            end
 
+            one = path(i,:);
+            other = path(i+2,:);
+
+            if ~check_edge(robot, one, other, link_radius, sphere_centers, sphere_radii)
+                smoothed_path = [smoothed_path; other];
+                skip_next = true;
+            else
+                smoothed_path = [smoothed_path; path(i+1,:)];
+            end 
+        end
+        
+        attempt = attempt + 1;
+        path = smoothed_path;
+    end
+    
+    if ~isequal(smoothed_path(end,:), q_goal)
+    	smoothed_path = [smoothed_path; q_goal];
+    end
 end
