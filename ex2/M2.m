@@ -41,7 +41,7 @@ function [samples, adjacency] = M2(robot, q_min, q_max, num_samples, num_neighbo
     for i = 1:num_samples
         q = samples(i,:);
         % Find nearest num_neighbors of q.
-        [N_q, N_q_d] = find_nearest_neighbors(num_neighbors, q, samples); 
+        [N_q, N_q_d] = find_nearest_neighbors(num_neighbors, q, samples);
         
         for j = 1:size(N_q, 1)
             n_q_row_num = N_q(j);
