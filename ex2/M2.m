@@ -41,25 +41,25 @@ function [samples, adjacency] = M2(robot, q_min, q_max, num_samples, num_neighbo
     for i = 1:num_samples
         q = samples(i,:);
         % Find nearest num_neighbors of q.
-        N_q = find_nearest_neighbors(num_neighbors, i, samples); 
+        [N_q, N_q_d] = find_nearest_neighbors(num_neighbors, q, samples); 
         
         for j = 1:size(N_q, 1)
             n_q_row_num = N_q(j);
             n_q = samples(n_q_row_num,:);
             if ~check_edge(robot, q, n_q, link_radius, sphere_centers, sphere_radii)
-                adjacency(i, n_q_row_num) = 1;
-                adjacency(n_q_row_num, i) = 1;
+                adjacency(i, n_q_row_num) = N_q_d(j);
+                adjacency(n_q_row_num, i) = N_q_d(j);
             end
         end
     end
 end
 
 
-function neighbors = find_nearest_neighbors(k, p_index, points)
-    this_p = points(p_index,:);
-    distances = vecnorm(points - this_p, 2, 2);
-    [~, I] = sort(distances);
+function [neighbors, distances] = find_nearest_neighbors(k, p, points)
+    distances = vecnorm(points - p, 2, 2);
+    [B, I] = sort(distances);
     neighbors = I(1+1:k+1,:);
+    distances = B(1+1:k+1,:);
 end
 
 function is_valid = validate_sample(robot, q, q_min, q_max, link_r, sphere_c, sphere_r)
