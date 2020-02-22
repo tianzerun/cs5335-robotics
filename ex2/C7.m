@@ -26,7 +26,6 @@ function padded_cspace = C7(cspace)
                        && in_range(n_y, valid_col_range)...
                        && cspace(n_x, n_y) == 0
                         padded_cspace(n_x, n_y) = 1;
-                        break;
                     end
                 end
             end
@@ -40,4 +39,3 @@ function eval = in_range(value, range)
     right = range(2);
     eval = value >= left && value <= right;
 end
-

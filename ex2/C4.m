@@ -67,9 +67,12 @@ end
 
 
 function distance = diagonal_dist(from_x, from_y, to_x, to_y)
-    D = 1; % cost of moving to one of the adjacent cells
-    D2 = 0.5; % cost of moving diagonally
+%     D = 1; % cost of moving to one of the adjacent cells
+%     D2 = 0.5; % cost of moving diagonally
+%     dx = abs(from_x - to_x);
+%     dy = abs(from_y - to_y);
+%     distance =  D * (dx + dy) + (D2 - 2 * D) * min(dx, dy);
     dx = abs(from_x - to_x);
     dy = abs(from_y - to_y);
-    distance =  D * (dx + dy) + (D2 - 2 * D) * min(dx, dy);
+    distance = max(dx, dy);
 end
