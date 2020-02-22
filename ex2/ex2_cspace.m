@@ -37,7 +37,12 @@ function cspace = ex2_cspace(questionNum, cspace)
     q_start = [0.85; 0.9];
     q_goal = [3.05; 0.05];
     if nargin < 2
-        cspace_resolution = 300;
+        % I changed resolution from 100 to 260 because it can make sure 
+        % the configuration space is discretized enough for C7 to work
+        % properly, where each obstacle in the cspace is padded by one
+        % cell. Otherwise, the start or goal configration might not be
+        % reachable.
+        cspace_resolution = 260; 
     else
         cspace_resolution = size(cspace, 1);
     end

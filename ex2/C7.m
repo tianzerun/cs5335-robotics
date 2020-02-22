@@ -7,6 +7,9 @@
 %                                  (including diagonal neighbors)
 %                          == 0 otherwise
 
+% To let this function generate a padded configration space where the start 
+% and goal configuration are reachable, make sure the resolution of the
+% configution is at least 260.
 function padded_cspace = C7(cspace)
     [num_row, num_col] = size(cspace);
     valid_row_range = [1 num_row];

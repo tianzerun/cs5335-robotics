@@ -40,3 +40,17 @@ function in_collision = check_collision(robot, q, link_radius, sphere_centers, s
         end
     end
 end
+
+
+% Potential issues: 
+% 1. @line 37, we check if the distance between each point and a sphere's 
+%    center is less than the sum of link_radius and sphere_radius to
+%    guarantee there is no collison. However, this might give us a false
+%    positive result when the end effector link is pointing to the center
+%    of a sphere's radius. In this case, we don't need to consider the link
+%    radius because the eff is not padded with a link radius.
+%
+% 2. @line 22, we set resolution to 11. One potential scenario might be 
+%    the mid point of two dicretized points is in collision with a sphere.
+%    In this case, we can get a false negative result when it happens 
+%    because our resolution is not fine enough for us to capture that.
