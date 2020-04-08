@@ -22,5 +22,156 @@
 %                    and the next two rows correspond to landmark 4, etc.
 
 function [x_est, P_est, indices] = E3(odo, zind, z, V, W, x0, P0)
+    x_est = {};
+    P_est = {};
+    indices = [];
+    x = x0;
+    P = P0;
+    [~, steps] = size(odo);
+    for k = 1:steps
+        cur_odo = odo(:,k);
+        
+        % Prediction Phase
+        F_x = Fx(x, cur_odo);
+        F_v = Fv(x, cur_odo);
+        x_pred = motion_model(x, cur_odo);
+        P_pred = F_x*P*F_x.' + F_v*V*F_v.';
+        
+        % Update Phase
+        z_i = zind(k);
+        if z_i ~= 0
+            obs = z{k};
+            % Observed an existing landmark
+            if ismember(z_i, indices)
+                ith = find(indices==z_i);
+                landmark = [x_pred(3+ith*2-1) x_pred(3+ith*2)];
+                H_w = Hw();
+                H_x = Hx(x_pred, landmark, ith, obs(1));
+                innov = obs - h(x_pred(1), x_pred(2), x_pred(3), landmark(1), landmark(2));
+                S = H_x*P_pred*H_x.' + H_w*W*H_w.';
+                K = P_pred*H_x.'*inv(S);
+                x = x_pred + K*innov;
+                P = P_pred - K*H_x*P_pred;
+            else % Observed a new landmark
+                indices = [indices ; z_i];
+                x = [x_pred; g(x_pred(1), x_pred(2), x_pred(3), obs(1), obs(2))];
+                [n, ~] = size(P_pred);
+                Y_z = Yz(n, x_pred(3), obs(1), obs(2));
+                middle_matrix = [P_pred zeros(n, 2); zeros(2, n) W];
+                P = Y_z * middle_matrix * Y_z.';
+            end
+        else
+            x = x_pred;
+            P = P_pred;
+        end
+        x_est{k} = x;
+        P_est{k} = P;
+    end
+end
 
+
+function x_est = motion_model(state, odo)
+    x_v = state(1);
+    y_v = state(2);
+    theta_v = state(3);
+    odo_d = odo(1);
+    odo_theta = odo(2);
+    x_est = [...
+        x_v+odo_d*cos(theta_v+odo_theta);...
+        y_v+odo_d*sin(theta_v+odo_theta);...
+        theta_v+odo_theta;...
+        state(4:end);...
+    ];
+end
+
+function F_x = Fx(state, odo)
+    [width, ~] = size(state);
+    theta_v = state(3);
+    odo_d = odo(1);
+    odo_theta = odo(2);
+    F_x = eye(width);
+    F_x(1:3,1:3) = [...
+        1, 0, -odo_d*sin(theta_v+odo_theta);...
+        0, 1, odo_d*cos(theta_v+odo_theta);...
+        0, 0, 1;...
+    ];
+end
+
+function F_v = Fv(state, odo)
+    [num_rows, ~] = size(state);
+    theta_v = state(3);
+    odo_theta = odo(2);
+    F_v = zeros(num_rows, 2);
+    F_v(1:3,1:2) = [...
+        cos(theta_v+odo_theta) 0;...
+        sin(theta_v+odo_theta) 0;...
+        0 1;...
+    ];
+end
+
+function z_est = h(x_v, y_v, theta_v, x_i, y_i)
+    d_x = x_i - x_v;
+    d_y = y_i - y_v;
+    z_est = [...
+        (d_y^2 + d_x^2)^(1/2);...
+        angdiff(atan2(d_y, d_x), theta_v);...
+    ];
+end
+
+function H_x = Hx(state, landmark, landmark_index, r)
+    ith = landmark_index;
+    [num_cols, ~] = size(state);
+    x_i = landmark(1);
+    y_i = landmark(2);
+    x_v = state(1);
+    y_v = state(2);
+    H_x = zeros(2, num_cols);
+    H_x(1:2,1:3) = [...
+        -(x_i-x_v)/r, -(y_i-y_v)/r, 0;...
+        (y_i-y_v)/(r^2), -(x_i-x_v)/(r^2), -1;...
+    ];
+    H_x(1:2,3+ith*2-1:3+ith*2) = Hpi(x_v, y_v, x_i, y_i, r);
+end
+
+function H_pi = Hpi(x_v, y_v, x_i, y_i, r)
+    d_x = x_i - x_v;
+    d_y = y_i - y_v;
+    H_pi = [...
+        d_x/r       d_y/r;...
+        -d_y/(r^2)  d_x/(r^2);...
+    ];
+end
+
+function H_w = Hw()
+    H_w = [1 0; 0 1];
+end
+
+function Y_z = Yz(n, theta_v, r, beta)
+    Y_z = [...
+        eye(n) zeros(n,2);... 
+        Gx(theta_v, r, beta) zeros(2,n-3) Gz(theta_v, r, beta);...    
+    ];
+end
+
+function pos = g(x_v, y_v, theta_v, range, bearing)
+    pos = [...
+        x_v + range * cos(theta_v + bearing);...
+        y_v + range * sin(theta_v + bearing);...
+    ];
+end
+
+function G_x = Gx(theta_v, range, bearing)
+    angle = theta_v + bearing;
+    G_x = [...
+        1 0 -range*sin(angle);...
+        0 1 range*cos(angle);...
+    ];
+end
+
+function G_z = Gz(theta_v, range, bearing)
+    angle = theta_v + bearing;
+    G_z = [...
+        cos(angle) -range*sin(angle);...
+        sin(angle) range*cos(angle);...
+    ];
 end
