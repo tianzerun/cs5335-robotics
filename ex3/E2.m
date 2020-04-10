@@ -65,8 +65,7 @@ function [x_est, P_est, indices] = E2(odo, zind, z, W, x0)
         x_est{k} = x;
         P_est{k} = P;
     end
-    
-    
+     
 end
 
 function H_w = Hw()

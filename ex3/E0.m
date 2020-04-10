@@ -31,7 +31,7 @@ function [ekf_l, ekf_m, ekf_s] = E0(V, W, x0, P0)
     veh = Bicycle();
     veh.x0 = x0;
     veh.add_driver(RandomPath(map.dim));
-    sensor = RangeBearingSensor(veh, map, 'covar', W);
+    sensor = RangeBearingSensor(veh, map, 'covar', W, 'angle', [-pi/2 pi/2], 'range', 4, 'animate');
     ekf_m = EKF(veh, [], [], sensor, W, []);
     rng(0);
     ekf_m.run(1000);
@@ -42,7 +42,7 @@ function [ekf_l, ekf_m, ekf_s] = E0(V, W, x0, P0)
     veh = Bicycle('covar', V);
     veh.x0 = x0;
     veh.add_driver(RandomPath(map.dim));
-    sensor = RangeBearingSensor(veh, map, 'covar', W);
+    sensor = RangeBearingSensor(veh, map, 'covar', W, 'angle', [-pi/2 pi/2], 'range', 4, 'animate');
     ekf_s = EKF(veh, V, P0, sensor, W, []);
     rng(0);
     ekf_s.run(1000);
