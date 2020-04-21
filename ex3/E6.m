@@ -5,10 +5,15 @@
 %                      odometry readings for T time steps
 
 function [x_truth, odo_truth] = E6(x0, T)
+    % Here is my answer to Part C:
+    % We can make SLAM perform better by moving some landmarks closer to 
+    % the start location. This is because predications about those 
+    % landmarks? positions will be less uncertain. Error will propagates 
+    % in a slower fashion.
     which_part = 'b';
     
     if which_part == 'a'
-        % Part a. Estimate all landmarks with greater error than E3.
+        % Part a: Estimate all landmarks with greater error than E3.
         critical_points = [
             3, 5;
             7, 9;
@@ -19,7 +24,7 @@ function [x_truth, odo_truth] = E6(x0, T)
             9, -9;
         ];
     else
-        % Part b. Estimate at least 10 landmarks with less error.
+        % Part b: Estimate at least 10 landmarks with less error.
         critical_points = [
             6, -4;
             6, -10;
