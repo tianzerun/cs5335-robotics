@@ -8,31 +8,29 @@ function [x_truth, odo_truth] = E6(x0, T)
     which_part = 'b';
     
     if which_part == 'a'
+        % Part a. Estimate all landmarks with greater error than E3.
         critical_points = [
-            3.575, 5.155;
-            6.983, 8.68;
-            7.8, 10;
-            8, 0;
-            3, -6;
-            4, -2;
-            -1.5, 8;
-            -7.5, 8.3;
-            -3, 1;
-            -4.5, -9;
-            3.9, -8.6;
-            6, -7.2;
-            9, -9.3;
+            3, 5;
+            7, 9;
+            6, -8;
+            -4, -8;
+            -6, 10;
+            -2, 9;
+            9, -9;
         ];
     else
+        % Part b. Estimate at least 10 landmarks with less error.
         critical_points = [
-            3.8, 5;
-            -4.5,0.5;
-            -7,7;
-            -2,8;
-            3.7,6.2;
-            9.2,9.3;
-            5.6,9.3;
-            -7,9.5;
+            6, -4;
+            6, -10;
+            2, -10;
+            2, -5;
+            8, 0;
+            4, 3;
+            0, 0;
+            6, -4;
+            10, 0;
+            5, -10;
         ];
     end
     
@@ -48,7 +46,7 @@ function [x_truth, odo_truth] = E6(x0, T)
         % rotation
         next_t = cur_t + bearing_steps;
         for s = cur_t:next_t-1
-            odo_d = 0.01;
+            odo_d = 0.05;
             if bearing < 0
                 angle = -0.0546;
             else
@@ -62,12 +60,11 @@ function [x_truth, odo_truth] = E6(x0, T)
         
         cur_t = next_t;
         range_steps = ceil(abs(range / 0.1));
-%         disp(range_steps);
         if range_steps > 10
             % slow run
-            next_t = cur_t + 5 * 5;
+            next_t = cur_t + 5 * 1;
             for s = cur_t:next_t
-               cur_odo = [0.02; 0];
+               cur_odo = [0.1; 0];
                odo_truth(:,s) = cur_odo;
                veh = update(veh, cur_odo);
             end
@@ -81,19 +78,19 @@ function [x_truth, odo_truth] = E6(x0, T)
                 veh = update(veh, cur_odo);
             end
             cur_t = next_t;
-            next_t = cur_t + 5 * 2;
+            next_t = cur_t + 5 * 1;
             % slow run
             for s = cur_t:next_t-1
-                cur_odo = [0.05; 0];
+                cur_odo = [0.1; 0];
                 odo_truth(:,s) = cur_odo;
                 veh = update(veh, cur_odo);
             end
             cur_t = next_t;
         else
-            next_t = cur_t + range_steps * 2;
+            next_t = cur_t + range_steps * 1;
             % slow run
             for s = cur_t:next_t-1
-                cur_odo = [0.05; 0];
+                cur_odo = [0.1; 0];
                 odo_truth(:,s) = cur_odo;
                 veh = update(veh, cur_odo);
             end
