@@ -10,7 +10,9 @@ function [x_truth, odo_truth] = E6(x0, T)
     % the start location. This is because predications about those 
     % landmarks? positions will be less uncertain. Error will propagates 
     % in a slower fashion.
-    which_part = 'b';
+    
+    % This which_part variable can be 'a' or 'b' to answer part a or b.
+    which_part = 'a';
     
     if which_part == 'a'
         % Part a: Estimate all landmarks with greater error than E3.
@@ -32,7 +34,7 @@ function [x_truth, odo_truth] = E6(x0, T)
             2, -5;
             8, 0;
             4, 3;
-            0, 0;
+            -1, 0;
             6, -4;
             10, 0;
             5, -10;
@@ -62,49 +64,18 @@ function [x_truth, odo_truth] = E6(x0, T)
             veh = update(veh, cur_odo);
             range = range - odo_d;
         end
-        
+        % displacement
         cur_t = next_t;
         range_steps = ceil(abs(range / 0.1));
-        if range_steps > 10
-            % slow run
-            next_t = cur_t + 5 * 1;
-            for s = cur_t:next_t
-               cur_odo = [0.1; 0];
-               odo_truth(:,s) = cur_odo;
-               veh = update(veh, cur_odo);
-            end
-            cur_t = next_t;
-            
-            next_t = cur_t + range_steps - 5;
-            % fast run
-            for s = cur_t:next_t-1
-                cur_odo = [0.1; 0];
-                odo_truth(:,s) = cur_odo;
-                veh = update(veh, cur_odo);
-            end
-            cur_t = next_t;
-            next_t = cur_t + 5 * 1;
-            % slow run
-            for s = cur_t:next_t-1
-                cur_odo = [0.1; 0];
-                odo_truth(:,s) = cur_odo;
-                veh = update(veh, cur_odo);
-            end
-            cur_t = next_t;
-        else
-            next_t = cur_t + range_steps * 1;
-            % slow run
-            for s = cur_t:next_t-1
-                cur_odo = [0.1; 0];
-                odo_truth(:,s) = cur_odo;
-                veh = update(veh, cur_odo);
-            end
-            cur_t = next_t;
+        next_t = cur_t + range_steps * 1;
+        for s = cur_t:next_t-1
+            cur_odo = [0.1; 0];
+            odo_truth(:,s) = cur_odo;
+            veh = update(veh, cur_odo);
         end
-        
+        cur_t = next_t;        
     end
     odo_truth = odo_truth(:,1:1000);
-
     % Compute the x_truth based on the odo_truth
     x_truth = zeros(3, T);
     x = x0;
