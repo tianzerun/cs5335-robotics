@@ -33,20 +33,24 @@ function [odo, zind, z] = E5(odo_truth, map, V, W, x0, range, fov, mode)
         x_t = getVehiclePos(x_t, odo_t);
         
         % Generate Noisy Observation
-        % get range and bearing to all landmarks
+        % get nosiy range and bearing to all landmarks
         rbs = h(x_t, map, W);
-        
         in_range = find(rbs(:,1) >= 0 & rbs(:,1) <= range... 
                         & rbs(:,2) >= fov(1) & rbs(:,2) <= fov(2));
         rbs = rbs(in_range,:);
+        observed_count = length(in_range);
         
-        
+        % Add observation record to z and zind based on the mode.
         if mode == 'a'
-            disp(mode);
-        elseif mode == 'f'
-            disp(mode);
-        else % assumes 'o' mode
-            observed_count = length(in_range);
+            % 'a' mode where all landmarks within range and fov are added.
+            if observed_count == 0
+                continue;
+            else
+                zind{t} = in_range;
+                z{t} = rbs;
+            end
+        elseif mode == 'o'
+            % 'o' mode where only one observed landmark is added at random.
             i = 1;
             if observed_count == 0
                 continue;
@@ -55,6 +59,9 @@ function [odo, zind, z] = E5(odo_truth, map, V, W, x0, range, fov, mode)
             end
             zind{t} = in_range(i);
             z{t} = rbs(i,:)';
+        else
+            disp('The following mode is not supported:');
+            disp(mode);
         end    
     end
 end
