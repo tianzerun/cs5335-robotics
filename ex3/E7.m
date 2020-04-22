@@ -22,6 +22,17 @@
 %                    and the next two rows correspond to landmark 4, etc.
 
 function [x_est, P_est, indices] = E7(odo, zind, z, V, W, x0, P0)
+    % Why multiple observations per time step lead to similar performance?
+    % - Although more observations are made, there are only about one tenth
+    % of the time steps where observations have more than one landmark. 
+    % Moreover, even though multiple landmarks can be observed at one time 
+    % step, in the worst case, estimation error will accumulate if the 
+    % sensor is not working well (high sensor noise) at those steps. These 
+    % poorly received additional data will not be helpful. 
+    % What are other sensor parameters that can lead to an improvement?
+    % - If the sensor noise is very low, it will definitely help improve 
+    % SLAM performace. In addition, to get more observations, we can
+    % increase range and field of view parameters.
     x_est = {};
     P_est = {};
     indices = [];
@@ -38,6 +49,7 @@ function [x_est, P_est, indices] = E7(odo, zind, z, V, W, x0, P0)
         P_pred = F_x*P*F_x.' + F_v*V*F_v.';
         
         % Update Phase
+        % process multiple observations
         for i = 1:numrows(zind{k})
             z_i = zind{k}(i,:);
             if z_i ~= 0
