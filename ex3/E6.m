@@ -10,8 +10,8 @@ function [x_truth, odo_truth] = E6(x0, T)
     % the start location. This is because predications about those 
     % landmarks's positions will be less uncertain. Error will propagate 
     % in a slower fashion. The moving agent is more certain about where it
-    % is from the begining. As a result, both localization and mapping will
-    % be slightly accurate.
+    % is from the beginning. As a result, both localization and mapping 
+    % will be slightly accurate.
     
     % This which_part variable can be 'a' or 'b' to answer part a or b.
     which_part = 'a';

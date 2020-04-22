@@ -47,7 +47,7 @@ function [odo, zind, z] = E5(odo_truth, map, V, W, x0, range, fov, mode)
                 continue;
             else
                 zind{t} = in_range;
-                z{t} = rbs;
+                z{t} = rbs';
             end
         elseif mode == 'o'
             % 'o' mode where only one observed landmark is added at random.

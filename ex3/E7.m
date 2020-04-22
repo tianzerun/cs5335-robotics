@@ -53,7 +53,7 @@ function [x_est, P_est, indices] = E7(odo, zind, z, V, W, x0, P0)
         for i = 1:numrows(zind{k})
             z_i = zind{k}(i,:);
             if z_i ~= 0
-                obs = z{k}(i,:);
+                obs = z{k}(:,i);
                 % Observed an existing landmark
                 if ismember(z_i, indices)
                     ith = find(indices==z_i);
@@ -61,7 +61,7 @@ function [x_est, P_est, indices] = E7(odo, zind, z, V, W, x0, P0)
                     H_w = Hw();
                     r = sqrt((landmark(2) - x_pred(2))^2 + (landmark(1) - x_pred(1))^2);
                     H_x = Hx(x_pred, landmark, ith, r);
-                    innov = obs' - h(x_pred(1), x_pred(2), x_pred(3), landmark(1), landmark(2));
+                    innov = obs - h(x_pred(1), x_pred(2), x_pred(3), landmark(1), landmark(2));
                     S = H_x*P_pred*H_x.' + H_w*W*H_w.';
                     K = P_pred*H_x.'*inv(S);
                     x_pred = x_pred + K*innov;
