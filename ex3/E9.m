@@ -25,9 +25,10 @@
 %                    and the next two rows correspond to landmark 4, etc.
 
 function [x_est, P_est, indices] = E9(odo, zind, z, V, W, range, fov, x0, P0)
-    % TODO notice here
+    % Assumes uniform distibution for the bearing value
+    % Get the corresponding mean and variance.
     beta_init = (fov(1) + fov(2)) / 2;
-    W = diag([W, (abs(fov(1))-abs(beta_init))^2]);
+    W = diag([W, ((max(fov) - min(fov))^2) / 12]);
     x_est = {};
     P_est = {};
     indices = [];

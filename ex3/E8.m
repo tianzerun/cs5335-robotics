@@ -25,9 +25,10 @@
 %                    and the next two rows correspond to landmark 4, etc.
 
 function [x_est, P_est, indices] = E8(odo, zind, z, V, W, range, fov, x0, P0)
-    % TODO notice here    
+    % Assumes uniform distibution for the range value
+    % Get the corresponding mean and variance.
     r_init = range / 2;
-    W = diag([r_init^2, W]);
+    W = diag([(range^2)/12, W]);
     x_est = {};
     P_est = {};
     indices = [];
@@ -48,7 +49,6 @@ function [x_est, P_est, indices] = E8(odo, zind, z, V, W, range, fov, x0, P0)
         for i = 1:numrows(zind{k})
             z_i = zind{k}(i,:);
             if z_i ~= 0
-                % TODO: notice here!
                 obs = [r_init; z{k}(:,i)];
                 % Observed an existing landmark
                 if ismember(z_i, indices)
