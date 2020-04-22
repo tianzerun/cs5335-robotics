@@ -27,6 +27,7 @@
 function [x_est, P_est, indices] = E9(odo, zind, z, V, W, range, fov, x0, P0)
     % Assumes uniform distibution for the bearing value
     % Get the corresponding mean and variance.
+    % Please see the written_part2.pdf document for answers to E9.
     beta_init = (fov(1) + fov(2)) / 2;
     W = diag([W, ((max(fov) - min(fov))^2) / 12]);
     x_est = {};

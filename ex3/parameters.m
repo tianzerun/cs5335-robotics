@@ -17,6 +17,6 @@ function [V, W, x0, P0, range, fov, T, num_trials] = parameters()
     % Number of timesteps
     T = 1000;
     % Number of trials to run
-    num_trials = 100;
+    num_trials = 1;
     
 end

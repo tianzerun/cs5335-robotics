@@ -27,6 +27,7 @@
 function [x_est, P_est, indices] = E8(odo, zind, z, V, W, range, fov, x0, P0)
     % Assumes uniform distibution for the range value
     % Get the corresponding mean and variance.
+    % Please see the written_part2.pdf document for answers to E8.
     r_init = range / 2;
     W = diag([(range^2)/12, W]);
     x_est = {};
